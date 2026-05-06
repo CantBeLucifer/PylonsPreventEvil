@@ -30,7 +30,7 @@ namespace PylonsPreventEvil
     {
         public string Id => "pylons-prevent-evil";
         public string Name => "Pylons Prevent Evil";
-        public string Version => "1.0.0";
+        public string Version => "1.1.0";
 
         public static Mod Instance { get; private set; }
         public ILogger Log { get; private set; }
