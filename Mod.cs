@@ -16,13 +16,13 @@ namespace PylonsPreventEvil
     {
         public override int Version => 1;
 
-        [Server, Label("Pylon Radius"), Description("The radius of a pylon's effects in tiles, only applies to newly placed pylons."), Range(1, 100)] 
+        [Client, Label("Pylon Radius"), Description("The radius of a pylon's effects in tiles, only applies to newly placed pylons."), Range(1, 100)] 
         public int PylonRadius { get; set; } = 20;
 
-        [Server, Label("Require Pylon Active"), Description("Whether pylons must be active for its effect to apply.")]
-        public bool RequirePylonActive { get; set; } = false;
+        [Client, Label("Require Pylon Active"), Description("Whether pylons must be active for its effect to apply.")]
+        public bool RequirePylonActive { get; set; } = true;
 
-        [Server, Label("Cleanse Hallow"), Description("Whether pylons should cleanse the Hallow.")]
+        [Client, Label("Cleanse Hallow"), Description("Whether pylons should cleanse the Hallow.")]
         public bool CleanseHallow { get; set; } = true;
     }
 
