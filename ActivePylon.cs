@@ -9,6 +9,7 @@ using Terraria.Audio;
 using Terraria.DataStructures;
 using Terraria.GameContent;
 using Terraria.ID;
+using Terraria.Localization;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PylonsPreventEvil
@@ -39,6 +40,27 @@ namespace PylonsPreventEvil
             _radius = radius;
             _radiusSq = radius * radius;
             _radialPath = Mod.BaseRadialPath;
+        }
+
+        public static void SendPylonSyncRadius(int x, int y, int radius)
+        {
+            if (Main.netMode == 0) return;
+
+            string payload = $"$PYLON_RAD|{x}|{y}|{radius}";
+            NetworkText text = NetworkText.FromLiteral(payload);
+
+            // msgType = 250 for mod traffic
+            NetMessage.SendData(250, -1, -1, text);
+        }
+
+        public static void SendPylonSyncEnabled(int x, int y, bool enabled)
+        {
+            if (Main.netMode == 0) return;
+
+            string payload = $"$PYLON_ON|{x}|{y}|{(enabled ? "1" : "0")}";
+            NetworkText text = NetworkText.FromLiteral(payload);
+
+            NetMessage.SendData(250, -1, -1, text);
         }
 
         public static void Refresh()
@@ -76,13 +98,16 @@ namespace PylonsPreventEvil
 
             foreach (ActivePylon pylon in ActivePylons)
             {
-                if (pylon.Enabled)
+                if (Main.netMode != 1 && pylon.Enabled)
                     pylon.Update();
 
-                Vector2 worldPos = new Vector2(pylon.X * 16, pylon.Y * 16);
-                if (Vector2.Distance(Main.LocalPlayer.Center, worldPos) < 2000f)
+                if (Main.netMode != 2)
                 {
-                    pylon.DrawRangeVisuals();
+                    Vector2 worldPos = new Vector2(pylon.X * 16, pylon.Y * 16);
+                    if (Vector2.Distance(Main.LocalPlayer.Center, worldPos) < 2000f)
+                    {
+                        pylon.DrawRangeVisuals();
+                    } 
                 }
             }
         }
@@ -128,6 +153,8 @@ namespace PylonsPreventEvil
                 pylon._lastPopup = apr.Text;
 
                 SoundEngine.PlaySound(SoundID.MaxMana, pos);
+
+                SendPylonSyncEnabled(pylon.X, pylon.Y, pylon.Enabled);
             }
         }
 
@@ -200,6 +227,8 @@ namespace PylonsPreventEvil
                 }
 
                 _radiusChangeCooldown = cooldown;
+
+                SendPylonSyncRadius(pylon.X, pylon.Y, pylon._radius);
             }
         }
 
@@ -284,6 +313,19 @@ namespace PylonsPreventEvil
             {
                 _pathIndex = 0;
             }
+        }
+
+        public void SyncRadiusFromNetwork(int radius)
+        {
+            _radius = radius;
+            _radiusSq = radius * radius;
+            Mod.Instance.Log.Info($"Recieved radius {radius} from server");
+        }
+
+        public void SyncEnabledFromNetwork(bool enabled)
+        {
+            Enabled = enabled;
+            Mod.Instance.Log.Info($"Recieved enabled = {enabled} from server");
         }
 
         public bool IsInRange(int i, int j)

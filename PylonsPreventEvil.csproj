@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main_DoUpdateInWorld_Patch.cs" />
+    <Compile Include="MessageBuffer_Patch.cs" />
     <Compile Include="Mod.cs" />
     <Compile Include="ActivePylon.cs" />
     <Compile Include="Player_Patch.cs" />
