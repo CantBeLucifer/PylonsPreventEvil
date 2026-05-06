@@ -1,0 +1,9 @@
+{
+  "id": "pylons-prevent-evil",
+  "name": "Pylons Prevent Evil",
+  "version": "1.0.0",
+  "author": "Lucifer",
+  "description": "Port to TerrariaModder",
+  "entry_dll": "PylonsPreventEvil.dll",
+  "icon": "icon.png"
+}
