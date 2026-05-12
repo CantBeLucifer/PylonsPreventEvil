@@ -13,8 +13,6 @@ namespace PylonsPreventEvil
     [HarmonyPatch(typeof(Player))]
     public static class Player_Patch
     {
-        static bool _firstClick = true;
-
         [HarmonyPostfix]
         [HarmonyPatch("TileInteractionsMouseOver")]
         static void TileInteractionsMouseOver_Postfix(Player __instance, int myX, int myY)
@@ -40,21 +38,14 @@ namespace PylonsPreventEvil
             {
                 return false;
             }
-            bool releaseUseTile = __instance.releaseUseTile;
             if (__instance.tileInteractAttempted)
             {
                 if (Main.tile[myX, myY].type == 597)
                 {
                     if (__instance.HeldItem.type == ItemID.PurificationPowder)
                     {
-                        if (releaseUseTile)
-                            _firstClick = true;
-
-                        if (_firstClick)
-                        {
-                            ActivePylon.IncreaseRadius(myX, myY, 20);
-                            _firstClick = false;
-                        }
+                        if (__instance.releaseUseTile)
+                            ActivePylon.IncreaseRadius(myX, myY, true);
                         else
                             ActivePylon.IncreaseRadius(myX, myY);
 
@@ -62,14 +53,8 @@ namespace PylonsPreventEvil
                     }
                     else if (__instance.HeldItem.type == ItemID.VilePowder || __instance.HeldItem.type == ItemID.ViciousPowder)
                     {
-                        if (releaseUseTile)
-                            _firstClick = true;
-
-                        if (_firstClick)
-                        {
-                            ActivePylon.DecreaseRadius(myX, myY, 20);
-                            _firstClick = false;
-                        }
+                        if (__instance.releaseUseTile)
+                            ActivePylon.DecreaseRadius(myX, myY, true);
                         else
                             ActivePylon.DecreaseRadius(myX, myY);
 
@@ -77,7 +62,7 @@ namespace PylonsPreventEvil
                     }
                     else if (__instance.HeldItem.type == ItemID.DirtBlock)
                     {
-                        if (releaseUseTile)
+                        if (__instance.releaseUseTile)
                         {
                             ActivePylon.Toggle(myX, myY);
 

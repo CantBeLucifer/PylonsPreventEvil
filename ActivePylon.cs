@@ -104,11 +104,15 @@ namespace PylonsPreventEvil
 
                 if (Main.netMode != 2)
                 {
-                    Vector2 worldPos = new Vector2(pylon.X * 16, pylon.Y * 16);
-                    if (Vector2.Distance(Main.LocalPlayer.Center, worldPos) < 2000f)
+                    Item heldItem = Main.LocalPlayer.HeldItem;
+                    if (heldItem != null && IndicatorItems.Contains(heldItem.type))
                     {
-                        pylon.DrawRangeVisuals();
-                    } 
+                        Vector2 worldPos = new Vector2(pylon.X * 16, pylon.Y * 16);
+                        if (Vector2.DistanceSquared(Main.LocalPlayer.Center, worldPos) < 16777216f)
+                        {
+                            pylon.DrawRangeVisuals();
+                        }
+                    }
                 }
             }
         }
@@ -159,19 +163,24 @@ namespace PylonsPreventEvil
             }
         }
 
-        public static void IncreaseRadius(int x, int y, int cooldown = 10)
+        public static void IncreaseRadius(int x, int y, bool clicked = false)
         {
-            UpdateRadius(x, y, 1, cooldown);
+            UpdateRadius(x, y, 1, clicked);
         }
         
-        public static void DecreaseRadius(int x, int y, int cooldown = 10)
+        public static void DecreaseRadius(int x, int y, bool clicked = false)
         {
-            UpdateRadius(x, y, -1, cooldown);
+            UpdateRadius(x, y, -1, clicked);
         }
 
-        public static void UpdateRadius(int x, int y, int by, int cooldown = 10)
+        public static void UpdateRadius(int x, int y, int by, bool clicked = false)
         {
-            if (_radiusChangeCooldown > 0 || by == 0) return;
+
+            if (clicked) _radiusChangeCooldown = 16;
+            else if (_radiusChangeCooldown > 0) return;
+            else _radiusChangeCooldown = 6;
+
+            if (by == 0) return;
 
             int x1 = x - 1;
             int x2 = x + 1;
@@ -227,8 +236,6 @@ namespace PylonsPreventEvil
                     SoundEngine.PlaySound(SoundID.MaxMana, pos);
                 }
 
-                _radiusChangeCooldown = cooldown;
-
                 SendPylonSyncRadius(pylon.X, pylon.Y, pylon._radius);
             }
         }
@@ -281,22 +288,20 @@ namespace PylonsPreventEvil
 
         private void DrawRangeVisuals()
         {
-            int dustType = Enabled ? 133 : 130;
+            int dustType = Enabled ? 292 : 296; // 133 : 130
 
-            Item heldItem = Main.LocalPlayer.HeldItem;
-            if (heldItem == null || !IndicatorItems.Contains(heldItem.type))
-                return;
-
-            float speed = 1.5f;
-            float baseAngle = Main.GlobalTimeWrappedHourly * speed;
             float worldRadius = _radius * 16f;
-            int dustNum = (int)Math.Ceiling(_radius / 5f);
+            float rotationSpeed = 900f / worldRadius;
+            float baseAngle = Main.GlobalTimeWrappedHourly * rotationSpeed;
+
+            float circumference = MathHelper.TwoPi * worldRadius;
+            int dustNum = (int)Math.Max(2, circumference / 360f);
 
             Vector2 center = new Vector2(X * 16, Y * 16);
 
             for (int i = 0; i < dustNum; i++)
             {
-                float angle = baseAngle + i * MathHelper.TwoPi / dustNum;
+                float angle = baseAngle + (i * MathHelper.TwoPi / dustNum);
 
                 Vector2 spawnPos = center + angle.ToRotationVector2() * worldRadius;
 
@@ -304,6 +309,9 @@ namespace PylonsPreventEvil
                 Main.dust[dustId].noGravity = true;
                 Main.dust[dustId].fadeIn = 1.2f;
                 Main.dust[dustId].velocity *= 0.25f;
+                Main.dust[dustId].noLight = true;
+                Main.dust[dustId].noLightEmittance = true;
+                Main.dust[dustId].fullBright = true;
             }
         }
 

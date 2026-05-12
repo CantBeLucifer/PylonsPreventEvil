@@ -25,7 +25,7 @@ namespace PylonsPreventEvil
         [Client, Label("Cleanse Hallow"), Description("Whether pylons should cleanse the Hallow.")]
         public bool CleanseHallow { get; set; } = true;
 
-        [Client, Label("Max Radius"), Description("The maximum radius of a Pylon")]
+        [Client, Label("Max Radius"), Description("The maximum radius of a Pylon"), Range(6, 1024)]
         public int MaxRadius { get; set; } = 160;
     }
 
@@ -65,6 +65,11 @@ namespace PylonsPreventEvil
                 Config.PylonRadius = Config.MaxRadius;
                 Config.Save();
             }
+            else if (Config.PylonRadius < 6)
+            {
+                Config.PylonRadius = 6;
+                Config.Save();
+            }
 
             BaseRadialPath.Clear();
             BaseRadialPath = GenerateRadialPath(Mod.Instance.Config.PylonRadius);
@@ -86,7 +91,13 @@ namespace PylonsPreventEvil
                 }
             }
 
-            radialPath = radialPath.OrderBy(p => p.X * p.X + p.Y * p.Y).ToList();
+            radialPath.Sort((a, b) =>
+            {
+                int distA = a.X * a.X + a.Y * a.Y;
+                int distB = b.X * b.X + b.Y * b.Y;
+                return distA.CompareTo(distB);
+            });
+
             return radialPath;
         }
     }
