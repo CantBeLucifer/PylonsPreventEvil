@@ -16,14 +16,17 @@ namespace PylonsPreventEvil
     {
         public override int Version => 1;
 
-        [Client, Label("Pylon Radius"), Description("The radius of a pylon's effects in tiles, only applies to newly placed pylons."), Range(1, 100)] 
-        public int PylonRadius { get; set; } = 20;
+        [Client, Label("Default Pylon Radius"), Description("The default radius of a pylon's effects in tiles, only applies to newly placed pylons.")] 
+        public int PylonRadius { get; set; } = 40;
 
         [Client, Label("Require Pylon Active"), Description("Whether pylons must be active for its effect to apply.")]
         public bool RequirePylonActive { get; set; } = true;
 
         [Client, Label("Cleanse Hallow"), Description("Whether pylons should cleanse the Hallow.")]
         public bool CleanseHallow { get; set; } = true;
+
+        [Client, Label("Max Radius"), Description("The maximum radius of a Pylon")]
+        public int MaxRadius { get; set; } = 160;
     }
 
     public class Mod : IMod
@@ -57,6 +60,12 @@ namespace PylonsPreventEvil
 
         public void OnConfigChanged()
         {
+            if (Config.PylonRadius > Config.MaxRadius)
+            {
+                Config.PylonRadius = Config.MaxRadius;
+                Config.Save();
+            }
+
             BaseRadialPath.Clear();
             BaseRadialPath = GenerateRadialPath(Mod.Instance.Config.PylonRadius);
             ActivePylon.Refresh();

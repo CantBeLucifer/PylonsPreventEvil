@@ -32,6 +32,7 @@ namespace PylonsPreventEvil
         private bool _foundEvilInCurrentPass = false;
         private string _lastPopup = string.Empty;
 
+        private const int _scannedTilesPerFrame = 200;
 
         public ActivePylon(int x, int y, int radius)
         {
@@ -182,7 +183,7 @@ namespace PylonsPreventEvil
             {
                 int oldRadius = pylon._radius;
 
-                pylon._radius = (int)MathHelper.Clamp(pylon._radius + by, 6, 60);
+                pylon._radius = (int)MathHelper.Clamp(pylon._radius + by, 6, Mod.Instance.Config.MaxRadius);
                 pylon._radiusSq = pylon._radius * pylon._radius;
                 pylon.RecalculateRadialPath();
 
@@ -239,7 +240,7 @@ namespace PylonsPreventEvil
                 _cooldown--;
                 return;
             }
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < _scannedTilesPerFrame; i++)
             {
                 if (_pathIndex >= _radialPath.Count)
                 {
