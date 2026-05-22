@@ -266,7 +266,7 @@ namespace PylonsPreventEvil
                     DoPoof(tx, ty);
 
                     _foundEvilInCurrentPass = true;
-                    _cooldown = 5;
+                    _cooldown = Mod.Instance.Config.ConversionDelay;
                     _pathIndex++;
                     break;
                 }
@@ -339,9 +339,9 @@ namespace PylonsPreventEvil
 
         public bool IsInRange(int i, int j)
         {
-            int dx = i;
-            int dy = j;
-            return dx * dx + dy * dy <= _radiusSq;
+            int dx = i - X;
+            int dy = j - Y;
+            return (dx * dx) + (dy * dy) <= _radiusSq;
         }
     }
 }

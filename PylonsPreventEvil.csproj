@@ -50,7 +50,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Terraria.Libraries.ReLogic.ReLogic">
-      <HintPath>C:\Users\Ben\Downloads\Terraria.Libraries.ReLogic.ReLogic.dll</HintPath>
+      <HintPath>..\Terraria.Libraries.ReLogic.ReLogic.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="TerrariaModder.Core">

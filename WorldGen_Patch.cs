@@ -27,7 +27,7 @@ namespace PylonsPreventEvil
         [HarmonyPatch(nameof(WorldGen.Convert), new Type[] { typeof(int), typeof(int), typeof(int), typeof(bool), typeof(bool) })]
         static bool Convert_Prefix(int i2, int j2, int conversionType)
         {
-            if (conversionType == 1 || conversionType == 2 || conversionType == 4)
+            if (conversionType == 1 || (conversionType == 2 && Mod.Instance.Config.CleanseHallow) || conversionType == 4)
             {
                 // Return inverted result of InRangeOfActivePylon, since if it's in range of an active pylon we want to prevent the conversion
                 return !InRangeOfActivePylon(i2, j2);

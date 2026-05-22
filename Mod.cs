@@ -25,8 +25,11 @@ namespace PylonsPreventEvil
         [Client, Label("Cleanse Hallow"), Description("Whether pylons should cleanse the Hallow.")]
         public bool CleanseHallow { get; set; } = true;
 
-        [Client, Label("Max Radius"), Description("The maximum radius of a Pylon"), Range(6, 1024)]
+        [Client, Label("Max Radius"), Description("The maximum radius of a Pylon."), Range(6, 1024)]
         public int MaxRadius { get; set; } = 160;
+
+        [Client, Label("Conversion Frame Delay"), Description("Delay, in frames, between each conversion action, game logic is 60 frames per second."), Range(0, 60)]
+        public int ConversionDelay { get; set; } = 1;
     }
 
     public class Mod : IMod
@@ -71,7 +74,6 @@ namespace PylonsPreventEvil
                 Config.Save();
             }
 
-            BaseRadialPath.Clear();
             BaseRadialPath = GenerateRadialPath(Mod.Instance.Config.PylonRadius);
             ActivePylon.Refresh();
         }
